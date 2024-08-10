@@ -101,7 +101,7 @@ def calc_resistances(types_list):
     return res_resistances
 
 def generate_moves_data():
-    url = "https://bulbapedia.bulbagarden.net/wiki/List_of_moves_by_availability_(Generation_VIII)"
+    url = "https://bulbapedia.bulbagarden.net/wiki/List_of_moves_by_availability_(Generation_IX)"
     req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
     html = urllib.request.urlopen(req).read()
     soup = BeautifulSoup(html, 'html.parser')
@@ -125,9 +125,10 @@ def generate_moves_data():
 
 
 
-main_url = "https://pikalytics.com/pokedex/series10"
+main_url = "https://pikalytics.com/pokedex/gen9vgc2024regg"
 
-main_page = urllib.request.urlopen(main_url)    
+req = urllib.request.Request(main_url, headers={'User-Agent': 'Mozilla/5.0'})
+main_page = urllib.request.urlopen(req)
 main_soup = BeautifulSoup(main_page, 'html.parser')
 poke_entries = main_soup.find_all("a",attrs={"class":"pokedex_entry"})
 pokemon_names = PokemonList.pokemon_list.copy()
@@ -146,7 +147,8 @@ types_dict = {}
 for pokemon in pokemon_names:
     try:
         temp_url = main_url + "/" + urllib.parse.quote(pokemon.lower())
-        page = urllib.request.urlopen(temp_url)
+        temp_req = urllib.request.Request(temp_url, headers={'User-Agent': 'Mozilla/5.0'})
+        page = urllib.request.urlopen(temp_req)
         soup = BeautifulSoup(page, 'html.parser')
         moves = get_moves(soup)
         usage_el = soup.find("div",{"class": "pokemon-ind-summary-text gold-font"})
@@ -199,13 +201,13 @@ resistances_dict = get_resistances(types_dict)
 
 
 print(read_pokemon)
-save_obj(usage_dict, "usage_pikalytics_s10")
-save_obj(moves_dict, "moves_pikalytics_s10")
-save_obj(teammates_dict, "teammates_pikalytics_s10")
-save_obj(items_dict, "items_pikalytics_s10")
-save_obj(abilities_dict, "abilities_pikalytics_s10")
-save_obj(spreads_dict, "spreads_pikalytics_s10")
-save_obj(types_dict, "types_pikalytics_s10")
-save_obj(resistances_dict, "resistances_pikalytics_s10")
+save_obj(usage_dict, "usage_pikalytics_2024g")
+save_obj(moves_dict, "moves_pikalytics_2024g")
+save_obj(teammates_dict, "teammates_pikalytics_2024g")
+save_obj(items_dict, "items_pikalytics_2024g")
+save_obj(abilities_dict, "abilities_pikalytics_2024g")
+save_obj(spreads_dict, "spreads_pikalytics_2024g")
+save_obj(types_dict, "types_pikalytics_2024g")
+save_obj(resistances_dict, "resistances_pikalytics_2024g")
 
 
