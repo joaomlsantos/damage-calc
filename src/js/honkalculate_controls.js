@@ -93,8 +93,9 @@ function performCalculations() {
 				defender = damageResults[0].defender;
 				var result, minMaxDamage, minDamage, maxDamage, minPercentage, maxPercentage, minPixels, maxPixels;
 				var highestDamage = -1;
-				var data = [setOptions[i].id];
+				//var data = [setOptions[i].id];
 				for (var n = 0; n < 4; n++) {
+					var data = [setOptions[i].id];
 					result = damageResults[n];
 					minMaxDamage = result.range();
 					minDamage = minMaxDamage[0];
@@ -103,6 +104,7 @@ function performCalculations() {
 					maxPercentage = Math.floor(maxDamage * 1000 / defender.maxHP()) / 10;
 					minPixels = Math.floor(minDamage * 48 / defender.maxHP());
 					maxPixels = Math.floor(maxDamage * 48 / defender.maxHP());
+					/*
 					if (maxDamage > highestDamage) {
 						highestDamage = maxDamage;
 						while (data.length > 1) {
@@ -113,12 +115,78 @@ function performCalculations() {
 						data.push(minPixels + " - " + maxPixels + "px");
 						data.push(attacker.moves[n].bp === 0 ? 'nice move' : (result.kochance(false).text || 'possibly the worst move ever'));
 					}
+					*/
+					console.log(attacker.moves[n].name);
+					console.log(attacker.moves[n].category);
+					if(attacker.moves[n].bp == 0 && !["Heavy Slam", "Grass Knot", "Final Gambit", "Heat Crash", "Electro Ball"].includes(attacker.moves[n].name)){
+						continue;
+					}
+					data.push(attacker.moves[n].name.replace("Hidden Power", "HP"));
+					data.push(minPercentage + " - " + maxPercentage + "%");
+					data.push(minPixels + " - " + maxPixels + "px");
+					data.push(attacker.moves[n].bp === 0 ? 'nice move' : (result.kochance(false).text || 'possibly the worst move ever'));
+
+					var defender_hp = defender.evs["hp"].toString()
+					var defender_def = defender.evs["def"].toString()
+					var defender_spdef = defender.evs["spd"].toString()
+					if(["Bold", "Impish", "Lax", "Relaxed"].includes(defender.nature)){
+						defender_def += "+"
+					}
+					if(["Calm", "Gentle", "Careful", "Sassy"].includes(defender.nature)){
+						defender_spdef += "+"
+					}
+	
+					var attacker_atk = attacker.evs["atk"].toString()
+					var attacker_spatk = attacker.evs["spa"].toString()
+	
+					if(["Lonely", "Adamant", "Naughty", "Brave"].includes(attacker.nature)){
+						attacker_atk += "+"
+					}
+					if(["Modest", "Mild", "Rash", "Quiet"].includes(attacker.nature)){
+						attacker_spatk += "+"
+					}
+	
+					var defender_evs = defender_hp + " HP, " + defender_def + " Def, " + defender_spdef + " SpDef";
+					var attacker_evs = attacker_atk + " Atk, " + attacker_spatk + " SpAtk";
+					
+					data.push((mode === "one-vs-all") ? defender_evs : attacker_evs);
+					data.push((mode === "one-vs-all") ? defender.types[0] : attacker.types[0]);
+					data.push(((mode === "one-vs-all") ? defender.types[1] : attacker.types[1]) || "");
+					data.push(((mode === "one-vs-all") ? defender.ability : attacker.ability) || "");
+					data.push(((mode === "one-vs-all") ? defender.item : attacker.item) || "");
+					dataSet.push(data);
 				}
+				/*
+				var defender_hp = defender.evs["hp"].toString()
+				var defender_def = defender.evs["def"].toString()
+				var defender_spdef = defender.evs["spd"].toString()
+				if(["Bold", "Impish", "Lax", "Relaxed"].includes(defender.nature)){
+					defender_def += "+"
+				}
+				if(["Calm", "Gentle", "Careful", "Sassy"].includes(defender.nature)){
+					defender_spdef += "+"
+				}
+
+				var attacker_atk = attacker.evs["atk"].toString()
+				var attacker_spatk = attacker.evs["spa"].toString()
+
+				if(["Lonely", "Adamant", "Naughty", "Brave"].includes(defender.nature)){
+					defender_spdef += "+"
+				}
+				if(["Modest", "Mild", "Rash", "Quiet"].includes(defender.nature)){
+					defender_spdef += "+"
+				}
+
+				var defender_evs = defender_hp + " HP, " + defender_def + " Def, " + defender_spdef + " SpDef";
+				var attacker_evs = attacker_atk + " Atk, " + attacker_spatk + " SpAtk";
+				
+				data.push((mode === "one-vs-all") ? defender_evs : attacker_evs);
 				data.push((mode === "one-vs-all") ? defender.types[0] : attacker.types[0]);
 				data.push(((mode === "one-vs-all") ? defender.types[1] : attacker.types[1]) || "");
 				data.push(((mode === "one-vs-all") ? defender.ability : attacker.ability) || "");
 				data.push(((mode === "one-vs-all") ? defender.item : attacker.item) || "");
 				dataSet.push(data);
+				*/
 			}
 		}
 	}
@@ -185,7 +253,7 @@ function constructDataTable() {
 		destroy: true,
 		columnDefs: [
 			{
-				targets: [3, 5, 6, 7, 8],
+				targets: [3, 6, 7, 8],
 				visible: false,
 				searchable: false
 			},

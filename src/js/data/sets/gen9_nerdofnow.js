@@ -9109,7 +9109,7 @@ var SETDEX_SV = {
             ]
         },
     },
-    "Urshifu": {
+    "Urshifu-Single Strike": {
         "VGC Offensive Focus Sash": {
             "level": 50,
             "evs": {
@@ -9151,7 +9151,7 @@ var SETDEX_SV = {
             ]
         },
     },
-    "Urshifu-Rapid-Strike": {
+    "Urshifu-Rapid Strike": {
         "VGC Mystic Water Set": {
             "level": 50,
             "evs": {
