@@ -748,7 +748,6 @@ $(".set-selector").change(function () {
 		}
 		if (typeof getSelectedTiers === "function") { // doesn't exist when in 1vs1 mode
 			var format = getSelectedTiers()[0];
-			console.log(format);
 			var is50lvl = startsWith(format, "VGC") || startsWith(format, "Battle Spot");
 			//var isDoubles = format === 'Doubles' || has50lvl; *TODO*
 			if (format === "LC") pokeObj.find(".level").val(5);
@@ -1025,7 +1024,8 @@ function createPokemon(pokeInfo) {
 		}
 
 		var pokemonMoves = [];
-		for (var i = 0; i < 4; i++) {
+		//for (var i = 0; i < 4; i++) {
+		for (var i = 0; i < Math.max(moveNames.length, 4); i++) {
 			var moveName = moveNames[i];
 			pokemonMoves.push(new calc.Move(gen, moves[moveName] ? moveName : "(No Move)", {ability: ability, item: item}));
 		}
@@ -1393,6 +1393,7 @@ $(".gen").change(function () {
 	loadDefaultLists();
 	$(".gen-specific.g" + gen).show();
 	$(".gen-specific").not(".g" + gen).hide();
+
 	var typeOptions = getSelectOptions(Object.keys(typeChart));
 	$("select.type1, select.move-type").find("option").remove().end().append(typeOptions);
 	$("select.teraType").find("option").remove().end().append(getSelectOptions(Object.keys(typeChart).slice(1)));

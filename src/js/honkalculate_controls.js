@@ -65,15 +65,22 @@ $.fn.dataTableExt.oSort['damage48-desc'] = function (a, b) {
 function performCalculations() {
 	var attacker, defender, setName, setTier;
 	var selectedTiers = getSelectedTiers();
-	var setOptions = getSetOptions();
+	var honkaSet = {}
+	var honkaSelected = $("select.honkaselect")[0].value.toString();
+	honkaSet[honkaSelected] = "";
+	var setOptions = getSetOptions(honkaSet);
 	var dataSet = [];
 	var pokeInfo = $("#p1");
+	
+	var curResults = [];
 	for (var i = 0; i < setOptions.length; i++) {
 		if (setOptions[i].id && typeof setOptions[i].id !== "undefined") {
 			setName = setOptions[i].id.substring(setOptions[i].id.indexOf("(") + 1, setOptions[i].id.lastIndexOf(")"));
 			setTier = setName.substring(0, setName.indexOf(" "));
 			if (selectedTiers.indexOf(setTier) !== -1) {
 				var field = createField();
+				var data_first = "";
+				var data_second = "";
 				if (mode === "one-vs-all") {
 					attacker = createPokemon(pokeInfo);
 					defender = createPokemon(setOptions[i].id);
@@ -94,8 +101,22 @@ function performCalculations() {
 				var result, minMaxDamage, minDamage, maxDamage, minPercentage, maxPercentage, minPixels, maxPixels;
 				var highestDamage = -1;
 				//var data = [setOptions[i].id];
-				for (var n = 0; n < 4; n++) {
+				for (var n = 0; n < damageResults.length; n++) {
+					/*
+					var data = [];
+
+					if (mode === "one-vs-all") {
+						data.push(pokeInfo.find("input.set-selector").val());
+						data.push(setOptions[i].id);
+					}
+					else{
+						data.push(setOptions[i].id);
+						data.push(pokeInfo.find("input.set-selector").val());
+					}
+						*/
+
 					var data = [setOptions[i].id];
+					//data.push(pokeInfo.find("input.set-selector").val());
 					result = damageResults[n];
 					minMaxDamage = result.range();
 					minDamage = minMaxDamage[0];
@@ -116,8 +137,6 @@ function performCalculations() {
 						data.push(attacker.moves[n].bp === 0 ? 'nice move' : (result.kochance(false).text || 'possibly the worst move ever'));
 					}
 					*/
-					console.log(attacker.moves[n].name);
-					console.log(attacker.moves[n].category);
 					if(attacker.moves[n].bp == 0 && !["Heavy Slam", "Grass Knot", "Final Gambit", "Heat Crash", "Electro Ball"].includes(attacker.moves[n].name)){
 						continue;
 					}
@@ -149,12 +168,21 @@ function performCalculations() {
 					var defender_evs = defender_hp + " HP, " + defender_def + " Def, " + defender_spdef + " SpDef";
 					var attacker_evs = attacker_atk + " Atk, " + attacker_spatk + " SpAtk";
 					
-					data.push((mode === "one-vs-all") ? defender_evs : attacker_evs);
+					//data.push((mode === "one-vs-all") ? defender_evs : attacker_evs);
 					data.push((mode === "one-vs-all") ? defender.types[0] : attacker.types[0]);
 					data.push(((mode === "one-vs-all") ? defender.types[1] : attacker.types[1]) || "");
 					data.push(((mode === "one-vs-all") ? defender.ability : attacker.ability) || "");
 					data.push(((mode === "one-vs-all") ? defender.item : attacker.item) || "");
-					dataSet.push(data);
+
+					console.log(data[1] + data[2] + data[4])
+					if(curResults.includes(data[1] + data[2] + data[4])){
+						continue;
+					}
+					else{
+						curResults.push(data[1] + data[2] + data[4]);
+						dataSet.push(data)
+					}
+					//dataSet.push(data);
 				}
 				/*
 				var defender_hp = defender.evs["hp"].toString()
@@ -204,7 +232,7 @@ function getSelectedTiers() {
 
 function calculateMovesOfAttacker(gen, attacker, defender, field) {
 	var results = [];
-	for (var i = 0; i < 4; i++) {
+	for (var i = 0; i < attacker.moves.length; i++) {
 		results[i] = calc.calculate(gen, attacker, defender, attacker.moves[i], field);
 	}
 	return results;
@@ -215,6 +243,9 @@ $(".gen").change(function () {
 	$("#singles-format").attr("disabled", false);
 	adjustTierBorderRadius();
 
+	var setDexOptions = getSelectOptions(Object.keys(SETDEX_SV));
+	$("select.honkaselect").find("option").remove().end().append(setDexOptions);
+	
 	if ($.fn.DataTable.isDataTable("#holder-2")) {
 		table.clear();
 		constructDataTable();
@@ -253,7 +284,7 @@ function constructDataTable() {
 		destroy: true,
 		columnDefs: [
 			{
-				targets: [3, 6, 7, 8],
+				targets: [3, 5, 6, 7],
 				visible: false,
 				searchable: false
 			},
@@ -397,6 +428,7 @@ $(document).ready(function () {
 
 	$("#" + mode).prop("checked", true);
 	$("#holder-2 th:first").text((mode === "one-vs-all") ? "Defender" : "Attacker");
+	//$("#holder-2 th").eq(1).text((mode === "one-vs-all") ? "Attacker" : "Defender");
 	$("#holder-2").show();
 
 	calcDTDimensions();
